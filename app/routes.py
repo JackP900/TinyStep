@@ -16,6 +16,8 @@ def steps():
 def stuck():
     data = request.get_json()
     step = data.get("step")
-    smaller_steps = rebreak(step, data, )
-    smaller_steps = ["open the doc", "title the doc", "write a singluar messy sentence", ]
-    return jsonify({"steps": smaller_steps, "assignment": data.get("assignment")})
+    assignment = data.get("assignment")
+    reason = data.get("reason")
+    stall_history = data.get("stall_history") or []
+    smaller_steps = rebreak(step, assignment, reason, stall_history)
+    return jsonify({"steps": smaller_steps})
