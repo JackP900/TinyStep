@@ -34,12 +34,12 @@ Respond with only a JSON array of strings, nothing else. One step per element, n
 """
 
 
-def breakdown():
+def breakdown(assignment):
     response = client.messages.create(
         model="claude-sonnet-5",
         max_tokens=1000,
         system=DECOMPOSITION_PROMPT,
-        messages=[{"role": "user", "content": "assignment"}],
+        messages=[{"role": "user", "content": assignment}],
     )
 
     text = response.content[0].text
