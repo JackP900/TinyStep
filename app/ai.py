@@ -93,11 +93,11 @@ def breakdown(assignment):
     return steps
 
 
-def rebreak(stuck_step, assignment, reason, stall_history):
+def rebreak(step, assignment, reason, stall_history):
 
     content = (
         f"Assignment: {assignment}\n"
-        f"Stuck step: {stuck_step}\n"
+        f"Stuck step: {step}\n"
         f"Reason: {reason}\n"
         f"Stall history: {stall_history}"
     )
