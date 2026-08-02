@@ -85,12 +85,20 @@ def breakdown(assignment):
     steps = json.loads(text)
     return steps
 
-def rebreak(stuck_step, stall_history, reason):
+def rebreak(assignment, stuck_step, stall_history, reason):
+    
+    content = (
+        f"Assigment: {assignment}\n"
+        f"Stuck step: {stuck_step}\n"
+        f"Reason: {reason}\n"
+        f"Stall history: {stall_history}"
+    )
+
     response = client.messages.create(
         model="claude-sonnet-5",
         max_tokens=1000,
         system=REBREAK_PROMPT,
-        messages=[{"role": "user", "stuck step": stuck_step, "reason": reason, "stall history": stall_history, }]
+        messages=[{"role": "user", "content": content}]
     )
 
     text = "".join(block.text for block in response.content if block.type == "text")
