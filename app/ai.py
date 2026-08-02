@@ -50,12 +50,12 @@ a smaller challenge, keep it fast.
 - scary: the student feels overwhelmed or that the stakes are high. Make the pieces as tiny as possible and lower the stakes (e.g. 
 "write one bad sentence you can delete later"). remove all pressure.
 
-Use the stall history to adjust intensity: if the same reason appears more than once, your normal responce isn't landing, so go even 
+Use the stall history to adjust intensity: if the same reason appears more than once, your normal response isn't landing, so go even 
 smaller and gentler by default. The more a reason repeats, the tinier and safer the pieces.
 
 The first piece should be the easiest possible entry point - almost effortless.
 
-Ignore the grades and deadlines and never metion them. Your tone is warm and shame-free
+Ignore the grades and deadlines and never mention them. Your tone is warm and shame-free
 
 <example input>
 assignment: Write a 5-page essay on the causes of WWI for history class, due Friday.
@@ -72,6 +72,13 @@ feels easy"]
 Respond with only a JSON array of strings, 2 to 3 elements, nothing else. No numbering, no text before or after the array.
 """
 
+def parse_steps(text):
+    start = text.find("[")
+    end = text.find("]")
+    if start == -1 or end == -1:
+        raise ValueError(f"No JSON array found in model response: {text!r}")
+    return json.loads(text[start : end + 1])
+
 
 def breakdown(assignment):
     response = client.messages.create(
@@ -82,8 +89,9 @@ def breakdown(assignment):
     )
 
     text = "".join(block.text for block in response.content if block.type == "text")
-    steps = json.loads(text)
+    steps = parse_steps(text)
     return steps
+
 
 def rebreak(stuck_step, assignment, reason, stall_history):
 
@@ -102,6 +110,5 @@ def rebreak(stuck_step, assignment, reason, stall_history):
     )
 
     text = "".join(block.text for block in response.content if block.type == "text")
-    steps = json.loads(text)
+    steps = parse_steps(text)
     return steps
-

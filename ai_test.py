@@ -1,12 +1,12 @@
-from app.ai import breakdown 
+from app.ai import rebreak
 
 print("script started")
 
 assignment = "Write a 5 page essay on the causes of WWI for History class, due friday."
-steps = breakdown(assignment)
+steps = "write two rough sentences about the first cause on your list."
 
-print("type: ", type(steps))
-print("count: ", len(steps))
-
-for i, s in enumerate(steps, 1):
-    print(f"{i}. {s}")
+for reason in ["unclear", "boring", "scary"]:
+    print(f"\n=== reason: {reason} ===")
+    pieces = rebreak(steps, assignment, reason, [reason, reason])
+    for i, p in enumerate(pieces, 1):
+        print(f"{i}, {p}")
