@@ -15,5 +15,5 @@ def breakdown():
 def stuck():
     data = request.get_json()
     step = data.get("step")
-    smaller_steps = ["open the doc", "title the doc", "write a singluar messy sentence", ]
-    return jsonify({"steps": smaller_steps, "assignment": data.get("assignment")})
+    smaller_steps = ["open the doc", "title the doc", "write a singular messy sentence", ]
+    return jsonify({"steps": smaller_steps})
