@@ -3,6 +3,17 @@ console.log("app.js is running");
 const button = document.getElementById("execute");
 const stepsBox = document.getElementById("steps");
 
+const progressFill = document.getElementById("progressFill");
+const streakDisplay = document.getElementById("streak");
+
+let totalSteps = 0;
+let progress = 0;
+let streak = 0;
+
+function updateProgress() {
+    progressFill.style.width = (progress / totalSteps) * 100 + "%";
+}
+
 button.addEventListener("click", async function () {
     const assignment = inputText.value;
     console.log(assignment);
@@ -19,11 +30,17 @@ button.addEventListener("click", async function () {
     button.disabled = false;
 
     stepsBox.textContent = "";
+    totalSteps = data.steps.length;
+    progress = 0;
+    streak = 0;
+    updateProgress();
+    streakDisplay.textContent = "Streak: 0";
+
     for (const [index, step] of data.steps.entries()) {
         const card = document.createElement("div");
         card.textContent = step;
 
-        if (index == 0) {
+        if (index === 0) {
             const badge = document.createElement("span");
             badge.textContent = " 2-minute starter";
             badge.className = "badge"; // Use for CSS styling later on
@@ -40,10 +57,20 @@ button.addEventListener("click", async function () {
 
         doneButton.addEventListener("click", function () {
             card.style.textDecoration = "line-through";
-        })
+            doneButton.disabled = true;
+            progress += 1;
+            updateProgress();
+            streak += 1;
+            streakDisplay.textContent = "Streak: " + streak;
+            stuckButton.style.display = "none";
+            card.classList.add("completed");
+        });
 
         stuckButton.addEventListener("click", function() {
             stuckButton.style.display = "none";
+
+            streak = 0;
+            streakDisplay.textContent = "Streak: 0";
 
             const question = document.createElement("p");
             question.textContent = "Is this step unclear, boring, or scary?";
@@ -89,6 +116,12 @@ button.addEventListener("click", async function () {
 
                         subDoneButton.addEventListener("click", function() {
                             subCard.style.textDecoration = "line-through";
+                            subDoneButton.disabled = true;
+                            progress += 1 / data.steps.length;
+                            updateProgress();
+                            streak += 1;
+                            streakDisplay.textContent = "Streak: " + streak;
+                            subCard.classList.add("completed");
                         });
 
                         subCard.appendChild(subDoneButton);
