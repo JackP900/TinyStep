@@ -85,10 +85,10 @@ def breakdown(assignment):
     steps = json.loads(text)
     return steps
 
-def rebreak(assignment, stuck_step, stall_history, reason):
-    
+def rebreak(stuck_step, assignment, reason, stall_history):
+
     content = (
-        f"Assigment: {assignment}\n"
+        f"Assignment: {assignment}\n"
         f"Stuck step: {stuck_step}\n"
         f"Reason: {reason}\n"
         f"Stall history: {stall_history}"
