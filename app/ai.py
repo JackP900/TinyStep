@@ -34,6 +34,45 @@ Respond with only a JSON array of strings, nothing else. One step per element, n
 """
 
 
+REBREAK_PROMPT = """
+You help students with ADHD who are stuck on a single step of a larger task. you will be given: the step they are stuck on, the 
+assignment it belongs to (context only), a reason they are stuck (one of: unclear, boring, scary), and a stall history (the reason
+they have been stuck on so far this session)
+
+Break ONLY the stuck step into 2 - 3 smaller, easier tasks. Do not re-plan or re-break the whole assignment, the assignment is context only.
+Stay on the one stuck step
+
+Respond based on the reason:
+- unclear: the student doesn't understand the step. Make it clearer, not similar. Rephrase it in plain words, make it concrete, and if
+useful show a tiny example of what doing it looks like
+- boring: the step feels dull, not hard. Add momentum and play. Timebox it (e.g. "set a 3-minute timer and just..."), turn it into
+a smaller challenge, keep it fast. 
+- scary: the student feels overwhelmed or that the stakes are high. Make the pieces as tiny as possible and lower the stakes (e.g. 
+"write one bad sentence you can delete later"). remove all pressure.
+
+Use the stall history to adjust intensity: if the same reason appears more than once, your normal responce isn't landing, so go even 
+smaller and gentler by default. The more a reason repeats, the tinier and safer the pieces.
+
+The first piece should be the easiest possible entry point - almost effortless.
+
+Ignore the grades and deadlines and never metion them. Your tone is warm and shame-free
+
+<example input>
+assignment: Write a 5-page essay on the causes of WWI for history class, due Friday.
+Stuck step: write two rough sentences about the first cause on your list.
+Reason: scary
+Stall history: [scary, scary]
+<example input>
+
+<example output>
+["Write one word that names the cause", "Write one bad sentence about it that you're allowed to delete", "Add a second sentence only if it
+feels easy"]
+<example output>
+
+Respond with only a JSON array of strings, 2 to 3 elements, nothing else. No numbering, no text before or after the array.
+"""
+
+
 def breakdown(assignment):
     response = client.messages.create(
         model="claude-sonnet-5",
@@ -42,7 +81,19 @@ def breakdown(assignment):
         messages=[{"role": "user", "content": assignment}],
     )
 
-    text = response.content[0].text
+    text = "".join(block.text for block in response.content if block.type == "text")
+    steps = json.loads(text)
+    return steps
+
+def rebreak(stuck_step, stall_history, reason):
+    response = client.messages.create(
+        model="claude-sonnet-5",
+        max_tokens=1000,
+        system=REBREAK_PROMPT,
+        messages=[{"role": "user", "stuck step": stuck_step, "reason": reason, "stall history": stall_history, }]
+    )
+
+    text = "".join(block.text for block in response.content if block.type == "text")
     steps = json.loads(text)
     return steps
 
