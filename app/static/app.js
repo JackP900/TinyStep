@@ -38,6 +38,7 @@ button.addEventListener("click", async function () {
 
     for (const [index, step] of data.steps.entries()) {
         const card = document.createElement("div");
+        card.classList.add("step");
         card.textContent = step;
 
         if (index === 0) {
@@ -102,6 +103,7 @@ button.addEventListener("click", async function () {
                     const data = await response.json();
 
                     card.innerHTML = "";
+                    card.className = "step-group";
 
                     const heading = document.createElement("p");
                     heading.textContent = step;
@@ -109,6 +111,7 @@ button.addEventListener("click", async function () {
 
                     for (const smallStep of data.steps) {
                         const subCard = document.createElement("div");
+                        subCard.classList.add("step");
                         subCard.textContent = smallStep;
 
                         const subDoneButton = document.createElement("button");

@@ -23,3 +23,73 @@
 .completed {
     animation: pop 0.3s ease;
 }
+
+body {
+    font-family: -apple-system, system-ui, sans-serif;
+    max-width: 640px;
+    margin: 40px auto;
+    padding: 0 20px;
+    color: #1a1a1a;
+    background: #fafafa;
+}
+
+textarea {
+    width: 100%;
+    min-height: 100px;
+    padding: 12px;
+    font-size: 15px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-sizing: border-box;
+    resize: vertical;
+}
+
+button {
+    padding: 8px 14px;
+    font-size: 14px;
+    border: none;
+    border-radius: 6px;
+    background: #5badc8;
+    cursor: pointer;
+}
+
+button:hover {background: #8fd3ea; }
+button:disabled { opacity: 0.45; cursor: default; }
+
+#execute {
+    background: #4de33e;
+    color: white;
+    margin-top: 10px;
+    font-size: 15px;
+}
+#execute:hover { background: #7ae46e }
+
+#streak { font-weight: 600; color: #333; }
+
+.step {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    margin: 8px 0;
+    background: white;
+    border: 1px solid #e2e2e2;
+    border-radius: 10px;
+}
+
+.badge {
+    background: #fff3cd;
+    color: #8a6d00;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 20px;
+    white-space: nowrap;
+}
+
+.step-group {
+    margin: 8px 0;
+    padding-left: 14px;
+    border-left: 3px solid #44c15e;
+}
+.step-group > p { font-weight: 600; margin: 8px 0; }
