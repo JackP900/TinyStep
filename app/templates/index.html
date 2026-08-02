@@ -3,12 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="static/styles.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
     <title>TinyStep</title>
 </head>
 <body>
-    <p>Hello, World</p>
+    <p>Enter your long text</p>
+    <textarea id="inputText"></textarea>
+    <button id="execute">Break it down</button>
+
+    <div id="steps"></div>
 
 
+<script src="{{ url_for('static', filename='app.js') }}"></script>
 </body>
 </html>
