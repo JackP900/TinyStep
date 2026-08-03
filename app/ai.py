@@ -8,6 +8,7 @@ ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY")
 
 client = Anthropic(api_key=ANTHROPIC_API_KEY)
 
+
 DECOMPOSITION_PROMPT = """
 You help students with ADHD. Your goal is to take in assignments and break it down into 4 - 7 smaller, more manageable sub-problems.
 
@@ -72,6 +73,7 @@ feels easy"]
 Respond with only a JSON array of strings, 2 to 3 elements, nothing else. No numbering, no text before or after the array.
 """
 
+
 CONTINUATON_PROMPT = """
 You help students with ADHD who are partway through an assignment. Your goal is to work out what is left to do and give them the next 4 - 7 
 small steps, picking up exactly where they left off.
@@ -105,6 +107,7 @@ write two rough sentences about the third cause on your list", Read your bullet 
 Respond with only a JSON array of strings, nothing else. One step per element, no numbering, no text before or after the array.
 """
 
+
 def parse_steps(text):
     start = text.find("[")
     end = text.find("]")
@@ -127,7 +130,6 @@ def breakdown(assignment):
 
 
 def rebreak(step, assignment, reason, stall_history):
-
     content = (
         f"Assignment: {assignment}\n"
         f"Stuck step: {step}\n"
@@ -139,6 +141,24 @@ def rebreak(step, assignment, reason, stall_history):
         model="claude-sonnet-5",
         max_tokens=1000,
         system=REBREAK_PROMPT,
+        messages=[{"role": "user", "content": content}]
+    )
+
+    text = "".join(block.text for block in response.content if block.type == "text")
+    steps = parse_steps(text)
+    return steps
+
+
+def continue_steps(completed_steps, assignment):
+    content = (
+        f"Assignment: {assignment}"
+        f"Completed_steps: {completed_steps}"
+    )
+
+    response = client.messages.create(
+        model="claude-sonnet-5",
+        max_tokens=1000,
+        system=CONTINUATON_PROMPT,
         messages=[{"role": "user", "content": content}]
     )
 
