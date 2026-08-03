@@ -28,8 +28,8 @@ def stuck():
 @app.route("/continue", methods=["POST"])
 def continue_step():
     data = request.get_json()
-    step = data.get("step")
+    step = data.get("completed_steps") or []
     assignment = data.get("assignment")
     next_steps = continue_steps(assignment, step)
-    return next_steps
+    return jsonify({"steps": next_steps})
     
