@@ -19,7 +19,7 @@ button.addEventListener("click", async function () {
     console.log(assignment);
 
     button.disabled = true;
-    stepsBox.textContent = "Thinking...";
+    stepsBox.innerHTML = '<div class="spinner"></div><p class="loading">Thinking...</p>';
 
     const response = await fetch("/breakdown", {
         method: "POST",
@@ -49,7 +49,7 @@ button.addEventListener("click", async function () {
             const badge = document.createElement("span");
             badge.textContent = " 2-minute starter";
             badge.className = "badge"; // Use for CSS styling later on
-            card.appendChild(badge);
+            stepText.appendChild(badge);
         }
 
         const actions = document.createElement("div");
@@ -58,11 +58,11 @@ button.addEventListener("click", async function () {
 
         const doneButton = document.createElement("button");
         doneButton.textContent = "Done";
-        card.appendChild(doneButton);
+        actions.appendChild(doneButton);
 
         const stuckButton = document.createElement("button");
         stuckButton.textContent = "I'm stuck";
-        card.appendChild(stuckButton);
+        actions.appendChild(stuckButton);
 
         doneButton.addEventListener("click", function () {
             card.style.textDecoration = "line-through";
@@ -85,10 +85,14 @@ button.addEventListener("click", async function () {
             question.textContent = "Is this step unclear, boring, or scary?";
             card.appendChild(question);
 
+            const choices = document.createElement("div");
+            choices.className = "actions";
+            card.appendChild(choices);
+
             for (const reason of ["unclear", "boring", "scary"]) {
                 const choiceButton = document.createElement("button");
                 choiceButton.textContent = reason;
-                card.appendChild(choiceButton);
+                choices.appendChild(choiceButton);
 
                 choiceButton.addEventListener("click", async function() {
                     const stored = localStorage.getItem("stallHistory");
@@ -96,7 +100,7 @@ button.addEventListener("click", async function () {
                     stallHistory.push(reason);
                     localStorage.setItem("stallHistory", JSON.stringify(stallHistory));
 
-                    card.innerHTML = "Thinking...";
+                    card.innerHTML = '<div class="spinner"></div>';
 
                     const response = await fetch("/stuck", {
                         method: "POST",

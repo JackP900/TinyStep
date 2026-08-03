@@ -67,9 +67,6 @@ button:disabled { opacity: 0.45; cursor: default; }
 #streak { font-weight: 600; color: #333; }
 
 .step {
-    display: flex;
-    align-items: center;
-    gap: 10px;
     padding: 12px 14px;
     margin: 8px 0;
     background: white;
@@ -85,7 +82,7 @@ button:disabled { opacity: 0.45; cursor: default; }
 
 .actions {
     display: flex;
-    gap: 8px;
+    gap: 10px;
     flex-wrap: wrap;
 }
 
@@ -105,3 +102,21 @@ button:disabled { opacity: 0.45; cursor: default; }
     border-left: 3px solid #44c15e;
 }
 .step-group > p { font-weight: 600; margin: 8px 0; }
+
+/* Loading Spinner */
+.spinner {
+    width: 28px;
+    height: 28px;
+    border: 3px solid #434343;
+    border-top-color: #44c15e;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 20px auto;
+}
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+.loading {
+    text: align-center;
+    color: #666;
+}
