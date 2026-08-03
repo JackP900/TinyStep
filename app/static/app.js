@@ -39,7 +39,11 @@ button.addEventListener("click", async function () {
     for (const [index, step] of data.steps.entries()) {
         const card = document.createElement("div");
         card.classList.add("step");
-        card.textContent = step;
+
+        const stepText = document.createElement("span");
+        stepText.className = "step-text";
+        stepText.textContent = step;
+        card.appendChild(stepText);
 
         if (index === 0) {
             const badge = document.createElement("span");
@@ -47,6 +51,10 @@ button.addEventListener("click", async function () {
             badge.className = "badge"; // Use for CSS styling later on
             card.appendChild(badge);
         }
+
+        const actions = document.createElement("div");
+        actions.className = "actions";
+        card.appendChild(actions);
 
         const doneButton = document.createElement("button");
         doneButton.textContent = "Done";
@@ -112,10 +120,19 @@ button.addEventListener("click", async function () {
                     for (const smallStep of data.steps) {
                         const subCard = document.createElement("div");
                         subCard.classList.add("step");
-                        subCard.textContent = smallStep;
+
+                        const subText = document.createElement("span");
+                        subText.className = "step-text";
+                        subText.textContent = smallStep;
+                        subCard.appendChild(subText);
+
+                        const subActions = document.createElement("div");
+                        subActions.className = "actions";
+                        subCard.appendChild(subActions);
 
                         const subDoneButton = document.createElement("button");
                         subDoneButton.textContent = "Done";
+                        subActions.appendChild(subDoneButton);
 
                         subDoneButton.addEventListener("click", function() {
                             subCard.style.textDecoration = "line-through";
@@ -127,7 +144,6 @@ button.addEventListener("click", async function () {
                             subCard.classList.add("completed");
                         });
 
-                        subCard.appendChild(subDoneButton);
                         card.appendChild(subCard);
                     }
                 })

@@ -77,6 +77,18 @@ button:disabled { opacity: 0.45; cursor: default; }
     border-radius: 10px;
 }
 
+.step-text {
+    display: block;
+    margin-bottom: 10px;
+    line-height: 1.4;
+}
+
+.actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
 .badge {
     background: #fff3cd;
     color: #8a6d00;
