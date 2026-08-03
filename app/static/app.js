@@ -1,10 +1,12 @@
 console.log("app.js is running");
 
 const button = document.getElementById("execute");
-const stepsBox = document.getElementById("steps");
+button.disabled = true; // Set button to disabled by default to prevent an empty entry
 
+const stepsBox = document.getElementById("steps");
 const progressFill = document.getElementById("progressFill");
 const streakDisplay = document.getElementById("streak");
+const progressBar = document.getElementById("progressBar");
 
 let totalSteps = 0;
 let progress = 0;
@@ -13,6 +15,10 @@ let streak = 0;
 function updateProgress() {
     progressFill.style.width = (progress / totalSteps) * 100 + "%";
 }
+
+inputText.addEventListener("input", function() {
+    button.disabled = inputText.value.trim() === "";
+})
 
 button.addEventListener("click", async function () {
     const assignment = inputText.value;
@@ -35,6 +41,12 @@ button.addEventListener("click", async function () {
     streak = 0;
     updateProgress();
     streakDisplay.textContent = "Streak: 0";
+
+    // Animate in the progress bar and streak when the prompt has been generated.
+    progressBar.classList.remove("hidden");
+    streakDisplay.classList.remove("hidden");
+    progressBar.classList.add("fade-in");
+    streakDisplay.classList.add("fade-in");
 
     for (const [index, step] of data.steps.entries()) {
         const card = document.createElement("div");
