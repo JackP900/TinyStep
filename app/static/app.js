@@ -6,7 +6,7 @@ button.disabled = true; // Set button to disabled by default to prevent an empty
 const stepsBox = document.getElementById("steps");
 const progressFill = document.getElementById("progressFill");
 const streakDisplay = document.getElementById("streak");
-const progressBar = document.getElementById("progressBar");
+const statusBar = document.getElementById("statusBar");
 
 let totalSteps = 0;
 let progress = 0;
@@ -41,12 +41,11 @@ button.addEventListener("click", async function () {
     streak = 0;
     updateProgress();
     streakDisplay.textContent = "Streak: 0";
+    localStorage.removeItem("stallHistory"); // Clear past stallHistory entries
 
     // Animate in the progress bar and streak when the prompt has been generated.
-    progressBar.classList.remove("hidden");
-    streakDisplay.classList.remove("hidden");
-    progressBar.classList.add("fade-in");
-    streakDisplay.classList.add("fade-in");
+    statusBar.classList.remove("hidden");
+    statusBar.classList.add("fade-in");
 
     for (const [index, step] of data.steps.entries()) {
         const card = document.createElement("div");
@@ -110,6 +109,11 @@ button.addEventListener("click", async function () {
                     const stored = localStorage.getItem("stallHistory");
                     const stallHistory = stored ? JSON.parse(stored): [];
                     stallHistory.push(reason);
+
+                    // Prevents stallHistory from becoming too large
+                    if (stallHistory.length > 10) {
+                        stallHistory.splice(0, stallHistory.length - 10);
+                    }
                     localStorage.setItem("stallHistory", JSON.stringify(stallHistory));
 
                     card.innerHTML = '<div class="spinner"></div>';
