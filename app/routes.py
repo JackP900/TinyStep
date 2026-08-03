@@ -1,16 +1,18 @@
 from app import app
 from flask import render_template, request, jsonify
-from app.ai import breakdown, rebreak
+from app.ai import breakdown, rebreak, continue_steps
 
 @app.route("/")
 def index():
     return render_template("index.html")
+
 
 @app.route("/breakdown", methods=["POST"])
 def steps():
     data = request.get_json()
     steps = breakdown(data.get("assignment"))
     return jsonify({"steps": steps})
+
 
 @app.route("/stuck", methods=["POST"])
 def stuck():
@@ -21,3 +23,13 @@ def stuck():
     stall_history = data.get("stall_history") or []
     smaller_steps = rebreak(step, assignment, reason, stall_history)
     return jsonify({"steps": smaller_steps})
+
+
+@app.route("/continue", methods=["POST"])
+def continue_step():
+    data = request.get_json()
+    step = data.get("step")
+    assignment = data.get("assignment")
+    next_steps = continue_steps(assignment, step)
+    return next_steps
+    
