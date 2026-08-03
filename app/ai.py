@@ -74,7 +74,7 @@ Respond with only a JSON array of strings, 2 to 3 elements, nothing else. No num
 """
 
 
-CONTINUATON_PROMPT = """
+CONTINUATION_PROMPT = """
 You help students with ADHD who are partway through an assignment. Your goal is to work out what is left to do and give them the next 4 - 7 
 small steps, picking up exactly where they left off.
 
@@ -82,11 +82,11 @@ You will be given: the assignment, and the steps the student has already complet
 
 Never repeat a completed step, including near-duplicates that are just reworded. Infer what remains from the completed steps and continue from there.
 
-The first step of each batch must be a trivial re-entry step: under 2 minutes, no thinking, no decisions (e.g. "reread the last thing they 
+The first step of each batch must be a trivial re-entry step: under 2 minutes, no thinking, no decisions (e.g. "reread the last thing you 
 wrote"). No single step should take longer than 10 minutes. The student should know for certain when each step is done. Ignore grades and deadlines and 
 never bring them up, as that creates unwanted pressure. Your tone should be warm and shame-free.
 
-If the assignment is nearly finished, return fewer steps (2 - 3 warm-up steps like proofreading are fine). If the completed steps already cover the whole 
+If the assignment is nearly finished, return fewer steps (2 - 3 wrap-up steps like proofreading are fine). If the completed steps already cover the whole 
 assignment, return an empty array: []
 
 <example input>
@@ -97,12 +97,12 @@ naming a single cause of the war"]
 
 <example output>
 ["Reread the two sentences you just wrote", "jot down three more causes as short bullet points", "Write two rough sentences about the second cause on your list", "
-write two rough sentences about the third cause on your list", Read your bullet list and star the cause you find most interesting"]
+write two rough sentences about the third cause on your list", "Read your bullet list and star the cause you find most interesting"]
 </example output>
 
 <bad output>
 ["Write a couple of sentences naming one cause of the war", "quickly research the rest of the causes, it's due Friday!"]
-</bad_output>
+</bad output>
 
 Respond with only a JSON array of strings, nothing else. One step per element, no numbering, no text before or after the array.
 """
@@ -149,16 +149,16 @@ def rebreak(step, assignment, reason, stall_history):
     return steps
 
 
-def continue_steps(completed_steps, assignment):
+def continue_steps(assignment, completed_steps):
     content = (
-        f"Assignment: {assignment}"
+        f"Assignment: {assignment}\n"
         f"Completed_steps: {completed_steps}"
     )
 
     response = client.messages.create(
         model="claude-sonnet-5",
         max_tokens=1000,
-        system=CONTINUATON_PROMPT,
+        system=CONTINUATION_PROMPT,
         messages=[{"role": "user", "content": content}]
     )
 
