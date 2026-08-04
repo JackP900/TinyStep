@@ -29,7 +29,7 @@ def stuck():
 @app.route("/continue", methods=["POST"])
 def continue_step():
     data = request.get_json()
-    step = data.get("completed_steps") or []
+    step = data.get("steps") or []
     assignment = data.get("assignment")
     next_steps = continue_steps(assignment, step)
     return jsonify({"steps": next_steps})

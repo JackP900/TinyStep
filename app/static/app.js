@@ -15,6 +15,7 @@ let totalSteps = 0;
 let progress = 0;
 let streak = 0;
 let assignment = "";
+let completedSteps = [];
 
 function updateProgress() {
    progressFill.style.width = (progress / totalSteps) * 100 + "%";
@@ -65,6 +66,7 @@ function renderSteps(steps) {
            streakDisplay.textContent = "Streak: " + streak;
            stuckButton.style.display = "none";
            card.classList.add("completed");
+           completedSteps.push(step);
            checkComplete();
        });
 
@@ -139,6 +141,7 @@ function renderSteps(steps) {
                            checkComplete();
                            streak += 1;
                            streakDisplay.textContent = "Streak: " + streak;
+                           completedSteps.push(smallStep);
                            subCard.classList.add("completed");
                        });
 
@@ -173,6 +176,7 @@ button.addEventListener("click", async function () {
    stepsBox.textContent = "";
    totalSteps = data.steps.length;
    progress = 0;
+   completedSteps = [];
    streak = 0;
    updateProgress();
    streakDisplay.textContent = "Streak: 0";
@@ -191,7 +195,7 @@ continueButton.addEventListener("click", async function () {
    const response = await fetch("/continue", {
        method: "POST",
        headers: {"Content-Type": "application/json"},
-       body: JSON.stringify({assignment: assignment, steps: totalSteps})
+       body: JSON.stringify({assignment: assignment, steps: completedSteps})
    })
    const data = await response.json();
 
