@@ -50,6 +50,9 @@ useful show a tiny example of what doing it looks like
 a smaller challenge, keep it fast. 
 - scary: the student feels overwhelmed or that the stakes are high. Make the pieces as tiny as possible and lower the stakes (e.g. 
 "write one bad sentence you can delete later"). remove all pressure.
+- pointless: the student doesn't see any point in doing the step, you need to break down that step and reframe the wording for the steps 
+to make sure the payoff feels real and immediate (e.g. "add the last two bullet points that finishes your list, and the hard thinking for the
+essay is done").
 
 Use the stall history to adjust intensity: if the same reason appears more than once, your normal response isn't landing, so go even 
 smaller and gentler by default. The more a reason repeats, the tinier and safer the pieces.
