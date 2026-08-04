@@ -10,6 +10,7 @@ const statusBar = document.getElementById("statusBar");
 const continueButton = document.getElementById("continue");
 const inputText = document.getElementById("inputText");
 const continueStepsBox = document.getElementById("continueSteps");
+const finishText = document.getElementById("finished");
 
 let totalSteps = 0;
 let progress = 0;
@@ -200,8 +201,17 @@ continueButton.addEventListener("click", async function () {
    const data = await response.json();
 
    continueStepsBox.innerHTML = "";
+
+   if (data.steps.length === 0) {
+       continueButton.classList.add("hidden");
+       continueButton.disabled = true;
+       continueStepsBox.innerHTML = '<p class="loading">🎉 All done — you\'ve finished everything!</p>';
+       return;
+   }
+
    continueButton.classList.add("hidden");
    totalSteps += data.steps.length;
    updateProgress();
    renderSteps(data.steps);
+   continueButton.disabled = false;
 });
