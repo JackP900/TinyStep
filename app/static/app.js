@@ -85,7 +85,7 @@ function renderSteps(steps) {
            choices.className = "actions";
            card.appendChild(choices);
 
-           for (const reason of ["unclear", "boring", "scary"]) {
+           for (const reason of ["unclear", "boring", "scary", "pointless"]) {
                const choiceButton = document.createElement("button");
                choiceButton.textContent = reason;
                choices.appendChild(choiceButton);
