@@ -1,10 +1,12 @@
 console.log("app.js is running");
 
 const button = document.getElementById("execute");
-const stepsBox = document.getElementById("steps");
+button.disabled = true; // Set button to disabled by default to prevent an empty entry
 
+const stepsBox = document.getElementById("steps");
 const progressFill = document.getElementById("progressFill");
 const streakDisplay = document.getElementById("streak");
+const progressBar = document.getElementById("progressBar");
 
 let totalSteps = 0;
 let progress = 0;
@@ -14,12 +16,16 @@ function updateProgress() {
     progressFill.style.width = (progress / totalSteps) * 100 + "%";
 }
 
+inputText.addEventListener("input", function() {
+    button.disabled = inputText.value.trim() === "";
+})
+
 button.addEventListener("click", async function () {
     const assignment = inputText.value;
     console.log(assignment);
 
     button.disabled = true;
-    stepsBox.textContent = "Thinking...";
+    stepsBox.innerHTML = '<div class="spinner"></div><p class="loading">Thinking...</p>';
 
     const response = await fetch("/breakdown", {
         method: "POST",
@@ -36,25 +42,39 @@ button.addEventListener("click", async function () {
     updateProgress();
     streakDisplay.textContent = "Streak: 0";
 
+    // Animate in the progress bar and streak when the prompt has been generated.
+    progressBar.classList.remove("hidden");
+    streakDisplay.classList.remove("hidden");
+    progressBar.classList.add("fade-in");
+    streakDisplay.classList.add("fade-in");
+
     for (const [index, step] of data.steps.entries()) {
         const card = document.createElement("div");
         card.classList.add("step");
-        card.textContent = step;
+
+        const stepText = document.createElement("span");
+        stepText.className = "step-text";
+        stepText.textContent = step;
+        card.appendChild(stepText);
 
         if (index === 0) {
             const badge = document.createElement("span");
             badge.textContent = " 2-minute starter";
             badge.className = "badge"; // Use for CSS styling later on
-            card.appendChild(badge);
+            stepText.appendChild(badge);
         }
+
+        const actions = document.createElement("div");
+        actions.className = "actions";
+        card.appendChild(actions);
 
         const doneButton = document.createElement("button");
         doneButton.textContent = "Done";
-        card.appendChild(doneButton);
+        actions.appendChild(doneButton);
 
         const stuckButton = document.createElement("button");
         stuckButton.textContent = "I'm stuck";
-        card.appendChild(stuckButton);
+        actions.appendChild(stuckButton);
 
         doneButton.addEventListener("click", function () {
             card.style.textDecoration = "line-through";
@@ -77,10 +97,14 @@ button.addEventListener("click", async function () {
             question.textContent = "Is this step unclear, boring, or scary?";
             card.appendChild(question);
 
+            const choices = document.createElement("div");
+            choices.className = "actions";
+            card.appendChild(choices);
+
             for (const reason of ["unclear", "boring", "scary"]) {
                 const choiceButton = document.createElement("button");
                 choiceButton.textContent = reason;
-                card.appendChild(choiceButton);
+                choices.appendChild(choiceButton);
 
                 choiceButton.addEventListener("click", async function() {
                     const stored = localStorage.getItem("stallHistory");
@@ -88,7 +112,7 @@ button.addEventListener("click", async function () {
                     stallHistory.push(reason);
                     localStorage.setItem("stallHistory", JSON.stringify(stallHistory));
 
-                    card.innerHTML = "Thinking...";
+                    card.innerHTML = '<div class="spinner"></div>';
 
                     const response = await fetch("/stuck", {
                         method: "POST",
@@ -112,10 +136,19 @@ button.addEventListener("click", async function () {
                     for (const smallStep of data.steps) {
                         const subCard = document.createElement("div");
                         subCard.classList.add("step");
-                        subCard.textContent = smallStep;
+
+                        const subText = document.createElement("span");
+                        subText.className = "step-text";
+                        subText.textContent = smallStep;
+                        subCard.appendChild(subText);
+
+                        const subActions = document.createElement("div");
+                        subActions.className = "actions";
+                        subCard.appendChild(subActions);
 
                         const subDoneButton = document.createElement("button");
                         subDoneButton.textContent = "Done";
+                        subActions.appendChild(subDoneButton);
 
                         subDoneButton.addEventListener("click", function() {
                             subCard.style.textDecoration = "line-through";
@@ -127,7 +160,6 @@ button.addEventListener("click", async function () {
                             subCard.classList.add("completed");
                         });
 
-                        subCard.appendChild(subDoneButton);
                         card.appendChild(subCard);
                     }
                 })
