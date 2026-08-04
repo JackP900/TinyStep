@@ -116,7 +116,7 @@ def parse_steps(text):
     return json.loads(text[start : end + 1])
 
 
-def breakdown(assi gnment):
+def breakdown(assignment):
     response = client.messages.create(
         model="claude-sonnet-5",
         max_tokens=1000,
