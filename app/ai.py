@@ -113,7 +113,7 @@ Respond with only a JSON array of strings, nothing else. One step per element, n
 
 def parse_steps(text):
     start = text.find("[")
-    end = text.find("]")
+    end = text.rfind("]")
     if start == -1 or end == -1:
         raise ValueError(f"No JSON array found in model response: {text!r}")
     return json.loads(text[start : end + 1])
