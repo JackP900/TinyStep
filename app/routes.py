@@ -10,7 +10,11 @@ def index():
 
 @app.route("/breakdown", methods=["POST"])
 def steps():
-    data = request.get_json()
+    data = request.get_json(siltent=True)
+
+    if not data or not data.get("assignments"):
+        return jsonify({"error": "...",}), 400
+
     steps = breakdown(data.get("assignment"))
     return jsonify({"steps": steps})
 
