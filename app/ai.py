@@ -21,12 +21,22 @@ creates unwanted pressure. Your tone should be warm and shame-free.
 
 <example input>
 Write a 5-page essay on the causes of WW1 for History class, due Friday.
-<example input>
+</example input>
 
 <example output>
 ["Open a blank Google doc", "Type the essay title at the top of the document", "write one short bullet point", "write two rough sentences
 naming a single cause of the war", "Jot down three more causes as short bullet points", "Write two rough sentences about the first cause
 on your list"]
+</example output>
+
+<example input>
+Revise for a biology exam on Friday.
+</example input>
+
+<example output>
+["Open your biology notes to the first topic", "Read through the first page of that topic once, no highlighting", "Write the three key terms
+from that page on a sticky note", "Cover the page and say out loud what one of those terms means", "Do one past-paper question on that topic"
+, "Check that one answer against your notes and tick what you got right"]
 </example output>
 
 <bad output>
