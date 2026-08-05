@@ -1,7 +1,12 @@
 from app import app
 from flask import render_template, request, jsonify
-from app.ai import breakdown, rebreak, continue_steps
+from app.ai import breakdown, rebreak, continue_steps, ModelOutputError
 
+
+@app.errorhandler(ModelOutputError)
+def handle_model_error(e):
+    return jsonify({"error": "..."}), 502
+    
 
 @app.route("/")
 def index():
@@ -21,20 +26,28 @@ def steps():
 
 @app.route("/stuck", methods=["POST"])
 def stuck():
-    data = request.get_json()
-    step = data.get("step")
-    assignment = data.get("assignment")
-    reason = data.get("reason")
-    stall_history = data.get("stall_history") or []
-    smaller_steps = rebreak(step, assignment, reason, stall_history)
+    data = request.get_json(silent=True)
+
+    if not data or not data.get("step") or not data.get("assignment") or not data.get("reason"):
+        return jsonify({"error": "..."}), 400
+
+    smaller_steps = rebreak(
+        data.get("step"),
+        data.get("assignment"),
+        data.get("reason"),
+        data.get("stall_history") or []
+    )
+    
     return jsonify({"steps": smaller_steps})
 
 
 @app.route("/continue", methods=["POST"])
 def continue_step():
-    data = request.get_json()
-    step = data.get("steps") or []
-    assignment = data.get("assignment")
-    next_steps = continue_steps(assignment, step)
+    data = request.get_json(silent=True)
+
+    if not data or not data.get("assignment"):
+        return jsonify({"error": "..."}), 400
+
+    next_steps = continue_steps(data.get("assignment"), data.get("steps") or [])
     return jsonify({"steps": next_steps})
     

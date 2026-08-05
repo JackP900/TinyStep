@@ -3,7 +3,7 @@ import json
 from dotenv import load_dotenv
 from anthropic import Anthropic
 
-class ModelOuputError(Exception):
+class ModelOutputError(Exception):
     pass
 
 load_dotenv()
@@ -118,17 +118,17 @@ def parse_steps(text):
     start = text.find("[")
     end = text.rfind("]")
     if start == -1 or end == -1:
-        raise ModelOuputError("No Array found")
+        raise ModelOutputError("No Array found")
 
     try:
         result = json.loads(text[start:end + 1])
     except json.JSONDecodeError:
-        raise ModelOuputError("Malformed json")
+        raise ModelOutputError("malformed JSON")
 
     if not isinstance(result, list):
-        raise ModelOuputError("not a list")
+        raise ModelOutputError("not a list")
     if not all(isinstance(s, str) and s.strip() for s in result):
-        raise ModelOuputError("not all strings")
+        raise ModelOutputError("not all strings")
 
     return result
 
