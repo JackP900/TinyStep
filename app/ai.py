@@ -3,6 +3,9 @@ import json
 from dotenv import load_dotenv
 from anthropic import Anthropic
 
+class ModelOuputError(Exception):
+    pass
+
 load_dotenv()
 ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY")
 
@@ -37,7 +40,7 @@ Respond with only a JSON array of strings, nothing else. One step per element, n
 
 REBREAK_PROMPT = """
 You help students with ADHD who are stuck on a single step of a larger task. you will be given: the step they are stuck on, the 
-assignment it belongs to (context only), a reason they are stuck (one of: unclear, boring, scary), and a stall history (the reason
+assignment it belongs to (context only), a reason they are stuck (one of: unclear, boring, scary, pointless), and a stall history (the reason
 they have been stuck on so far this session)
 
 Break ONLY the stuck step into 2 - 3 smaller, easier tasks. Do not re-plan or re-break the whole assignment, the assignment is context only.
@@ -115,8 +118,20 @@ def parse_steps(text):
     start = text.find("[")
     end = text.rfind("]")
     if start == -1 or end == -1:
-        raise ValueError(f"No JSON array found in model response: {text!r}")
-    return json.loads(text[start : end + 1])
+        raise ModelOuputError("No Array found")
+
+    try:
+        result = json.loads(text[start:end + 1])
+    except json.JSONDecodeError:
+        raise ModelOuputError("Malformed json")
+
+    if not isinstance(result, list):
+        raise ModelOuputError("not a list")
+    if not all(isinstance(s, str) and s.strip() for s in result):
+        raise ModelOuputError("not all strings")
+
+    return result
+
 
 
 def breakdown(assignment):
