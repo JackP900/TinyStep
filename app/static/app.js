@@ -63,7 +63,7 @@ function renderSteps(steps) {
        actions.appendChild(stuckButton);
 
        doneButton.addEventListener("click", function () {
-           card.style.textDecoration = "line-through";
+           stepText.style.textDecoration = "line-through";
            doneButton.disabled = true;
            progress += 1;
            updateProgress();
