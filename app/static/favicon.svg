@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="TinyStep">
+  <rect width="64" height="64" rx="14" fill="#44c15e"/>
+  <rect x="14" y="36" width="10" height="14" rx="3" fill="#ffffff"/>
+  <rect x="27" y="26" width="10" height="24" rx="3" fill="#ffffff"/>
+  <rect x="40" y="16" width="10" height="34" rx="3" fill="#ffffff"/>
+</svg>
