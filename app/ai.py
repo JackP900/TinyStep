@@ -1,5 +1,4 @@
 import os 
-import json 
 from dotenv import load_dotenv
 from anthropic import Anthropic
 
@@ -10,6 +9,25 @@ load_dotenv()
 ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY")
 
 client = Anthropic(api_key=ANTHROPIC_API_KEY)
+
+
+STEP_TOOL = {
+    "name": "return_steps",
+    "description": "Return the ordered list of tiny steps for the student.",
+    "input_schema": {
+        "type": "object",
+        "properties": {
+            "steps": {
+                "type": "array",
+                "items": {"type": "string"},
+                "minItems": 2,
+                "maxItems": 7,
+                "description": "One concrete action per element. No numbering",
+            }
+        },
+        "required": ["steps"],
+    },
+}
 
 
 DECOMPOSITION_PROMPT = """
@@ -123,25 +141,12 @@ write two rough sentences about the third cause on your list", "Read your bullet
 Respond with only a JSON array of strings, nothing else. One step per element, no numbering, no text before or after the array.
 """
 
-
-def parse_steps(text):
-    start = text.find("[")
-    end = text.rfind("]")
-    if start == -1 or end == -1:
-        raise ModelOutputError("No Array found")
-
-    try:
-        result = json.loads(text[start:end + 1])
-    except json.JSONDecodeError:
-        raise ModelOutputError("malformed JSON")
-
-    if not isinstance(result, list):
-        raise ModelOutputError("not a list")
-    if not all(isinstance(s, str) and s.strip() for s in result):
-        raise ModelOutputError("not all strings")
-
-    return result
-
+def extract_steps(response):
+    for block in response.content:
+        if block.type == "tool_use" and block.name == "return_steps":
+            steps = block.input["steps"]
+            return steps
+    raise ModelOutputError("no tool_use block")
 
 
 def breakdown(assignment):
@@ -149,11 +154,12 @@ def breakdown(assignment):
         model="claude-sonnet-5",
         max_tokens=1000,
         system=DECOMPOSITION_PROMPT,
+        tools=[STEP_TOOL],
+        tool_choice={"type": "tool", "name": "return_steps"},
         messages=[{"role": "user", "content": assignment}],
     )
 
-    text = "".join(block.text for block in response.content if block.type == "text")
-    steps = parse_steps(text)
+    steps = extract_steps(response)
     return steps
 
 
@@ -169,11 +175,12 @@ def rebreak(step, assignment, reason, stall_history):
         model="claude-sonnet-5",
         max_tokens=1000,
         system=REBREAK_PROMPT,
+        tools=[STEP_TOOL],
+        tool_choice={"type": "tool", "name": "return_steps"},
         messages=[{"role": "user", "content": content}]
     )
 
-    text = "".join(block.text for block in response.content if block.type == "text")
-    steps = parse_steps(text)
+    steps = extract_steps(response)
     return steps
 
 
@@ -187,9 +194,10 @@ def continue_steps(assignment, completed_steps):
         model="claude-sonnet-5",
         max_tokens=1000,
         system=CONTINUATION_PROMPT,
+        tools = [STEP_TOOL],
+        tool_choice={"type": "tool", "name": "return_steps"},
         messages=[{"role": "user", "content": content}]
     )
 
-    text = "".join(block.text for block in response.content if block.type == "text")
-    steps = parse_steps(text)
+    steps = extract_steps(response)
     return steps
