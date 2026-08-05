@@ -144,3 +144,18 @@ button:disabled { opacity: 0.45; cursor: default; }
     font-weight: 700;
     color: #444;
 }
+
+/* Error Handling */
+.error-box {
+    text-align: center;
+    padding: 24px 16px;
+}
+.error-box .error-code {
+    font-weight: 700;
+    color: #c62828;
+    margin-top: 10px;
+}
+.error-box .error-message {
+    color: #555;
+    margin: 6px 0 16px;
+}

@@ -159,6 +159,24 @@ function renderSteps(steps) {
    }
 }
 
+// Error handling function
+function showError(container, code, message, retryFn) {
+    container.innerHTML = `
+        <div class="error-box">
+            <svg width="52" height="52" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 3 L22 20 H2 Z" fill="#e53935" stroke="#e53935" stroke-width="2.5" stroke-linejoin="round"/>
+                <rect x="11" y="9" width="2" height="6" rx="1" fill="#fff"/>
+                <rect x="11" y="16.5" width="2" height="2" rx="1" fill="#fff"/>
+            </svg>
+            <div class="error-code"></div>
+            <div class="error-message"></div>
+            <button class="retry">Try again</button>
+        </div>`;
+    container.querySelector(".error-code").textContent = code ? "Error " + code : "Something went wrong";
+    container.querySelector(".error-message").textContent = message || "Please try again in a moment.";
+    container.querySelector(".retry").addEventListener("click", retryFn);
+}
+
 // Prevents the user from submitting an empty text box
 inputText.addEventListener("input", function () {
    button.disabled = inputText.value.trim() === "";
@@ -177,6 +195,13 @@ button.addEventListener("click", async function () {
        headers: {"Content-Type": "application/json"},
        body: JSON.stringify({assignment: assignment})
    })
+
+   if (!response.ok) {
+       const error = await response.json().catch(() => ({}));
+       showError(stepsBox, response.status, error.error, () => button.click());
+       button.disabled = false;
+       return;
+   }
    const data = await response.json();
    button.disabled = false;
 
