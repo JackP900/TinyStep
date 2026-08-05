@@ -162,7 +162,7 @@ function renderSteps(steps) {
 // Error handling function
 function showError(container, code, message, retryFn) {
     container.innerHTML = `
-        <div class="error-box">
+        <div class="error-box fade-in">
             <svg width="52" height="52" viewBox="0 0 24 24" aria-hidden="true">
                 <path d="M12 3 L22 20 H2 Z" fill="#e53935" stroke="#e53935" stroke-width="2.5" stroke-linejoin="round"/>
                 <rect x="11" y="9" width="2" height="6" rx="1" fill="#fff"/>
@@ -188,6 +188,11 @@ button.addEventListener("click", async function () {
 
    button.disabled = true;
    stepsBox.innerHTML = '<div class="spinner"></div><p class="loading">Thinking...</p>';
+
+   if (assignment.trim() === "!DEMOERROR") {
+       showError(stepsBox, 502, "This is a test error.", () => button.click());
+       return;
+   }
 
    // Fetching AI response from the user input
    const response = await fetch("/breakdown", {
