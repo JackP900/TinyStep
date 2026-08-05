@@ -1,27 +1,28 @@
-console.log("app.js is running");
+console.log("app.js is running"); // Ensures that the program is running on the webpage
 
 const button = document.getElementById("execute");
-button.disabled = true; // Set button to disabled by default to prevent an empty entry
-
 const stepsBox = document.getElementById("steps");
-const progressFill = document.getElementById("progressFill");
-const streakDisplay = document.getElementById("streak");
-const statusBar = document.getElementById("statusBar");
 const continueButton = document.getElementById("continue");
 const inputText = document.getElementById("inputText");
 const continueStepsBox = document.getElementById("continueSteps");
-const finishText = document.getElementById("finished");
+
+const progressFill = document.getElementById("progressFill");
+const streakDisplay = document.getElementById("streak");
+const statusBar = document.getElementById("statusBar");
 
 let totalSteps = 0;
 let progress = 0;
 let streak = 0;
 let assignment = "";
 let completedSteps = [];
+button.disabled = true; // Set button to disabled by default to prevent an empty entry
 
+// Used to change the progress bar to represent how close the user is to completion
 function updateProgress() {
    progressFill.style.width = (progress / totalSteps) * 100 + "%";
 }
 
+// Checks if all steps have been crossed out, used to enable the continue button
 function checkComplete() {
    if (totalSteps > 0 && progress >= totalSteps - 0.001) {
        continueButton.classList.remove("hidden");
@@ -29,9 +30,10 @@ function checkComplete() {
    }
 }
 
+// Main function to render out each step on the webpage
 function renderSteps(steps) {
    for (const [index, step] of steps.entries()) {
-       const card = document.createElement("div");
+       const card = document.createElement("div"); // Main "block" where the steps will reside
        card.classList.add("step");
 
        const stepText = document.createElement("span");
@@ -39,13 +41,15 @@ function renderSteps(steps) {
        stepText.textContent = step;
        card.appendChild(stepText);
 
+       // Used to determine whether the step requires the "2-minute starter" badge or not
        if (index === 0) {
            const badge = document.createElement("span");
            badge.textContent = " 2-minute starter";
-           badge.className = "badge"; // Use for CSS styling later on
+           badge.className = "badge";
            stepText.appendChild(badge);
        }
 
+       // Container for the action buttons
        const actions = document.createElement("div");
        actions.className = "actions";
        card.appendChild(actions);
@@ -85,7 +89,7 @@ function renderSteps(steps) {
            choices.className = "actions";
            card.appendChild(choices);
 
-           for (const reason of ["unclear", "boring", "scary"]) {
+           for (const reason of ["unclear", "boring", "scary", "pointless"]) {
                const choiceButton = document.createElement("button");
                choiceButton.textContent = reason;
                choices.appendChild(choiceButton);
@@ -155,6 +159,7 @@ function renderSteps(steps) {
    }
 }
 
+// Prevents the user from submitting an empty text box
 inputText.addEventListener("input", function () {
    button.disabled = inputText.value.trim() === "";
 });
@@ -166,6 +171,7 @@ button.addEventListener("click", async function () {
    button.disabled = true;
    stepsBox.innerHTML = '<div class="spinner"></div><p class="loading">Thinking...</p>';
 
+   // Fetching AI response from the user input
    const response = await fetch("/breakdown", {
        method: "POST",
        headers: {"Content-Type": "application/json"},
@@ -174,6 +180,7 @@ button.addEventListener("click", async function () {
    const data = await response.json();
    button.disabled = false;
 
+   // Setting up the area and variables for the steps to be displayed
    stepsBox.textContent = "";
    totalSteps = data.steps.length;
    progress = 0;
@@ -193,6 +200,7 @@ continueButton.addEventListener("click", async function () {
    continueButton.disabled = true;
    continueStepsBox.innerHTML = '<div class="spinner"></div><p class="loading">Thinking...</p>';
 
+   // Fetching AI response using the previous user input and steps
    const response = await fetch("/continue", {
        method: "POST",
        headers: {"Content-Type": "application/json"},
@@ -200,8 +208,10 @@ continueButton.addEventListener("click", async function () {
    })
    const data = await response.json();
 
+   // Clearing the new area for the next steps
    continueStepsBox.innerHTML = "";
 
+   // Checking if the returned array was empty, meaning that the user has completed all steps
    if (data.steps.length === 0) {
        continueButton.classList.add("hidden");
        continueButton.disabled = true;
@@ -209,6 +219,7 @@ continueButton.addEventListener("click", async function () {
        return;
    }
 
+   // Showing the new steps and updating all variables/progress
    continueButton.classList.add("hidden");
    totalSteps += data.steps.length;
    updateProgress();
