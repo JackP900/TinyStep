@@ -22,7 +22,7 @@ def init_db():
         task_id        INTEGER,
         reason         TEXT NOT NULL,
         created_at     TEXT NOT NULL DEFAULT (datetime('now')),
-        FOREIGN KEY (task_id) REFERENCES tasks(id)"
+        FOREIGN KEY (task_id) REFERENCES tasks(id)
         );
 
         CREATE INDEX IF NOT EXISTS idx_stall_device ON stall_events(device_token);
