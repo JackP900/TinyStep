@@ -7,7 +7,7 @@ import uuid, json
 
 @app.before_request
 def assign_device_token():
-    token = request.cookies.get("device_token")
+    token = request.cookie.get("device_token")
     if token is None:
         g.device_token = str(uuid.uuid4())
         g.new_token = True
@@ -33,7 +33,8 @@ def set_device_cookie(response):
 def save():
     data = request.get_json(silent=True)
     if data is None or "state" not in data:
-        return jsonify({"error", "save didn't work, try again"}), 400
+        return jsonify({"error": "save didn't work, try again"}), 400
+    
     state_json = json.dumps(data["state"])
     finished = int(bool(data.get("finished")))
     db = get_db()
@@ -43,21 +44,21 @@ def save():
         if not data.get("assignment"):
             return jsonify({"error": "No task_id"}), 400
 
-        cur = db.execute("INSERT string, tuple: g.device_token, assignment, state_json, finished")
+        cur = db.execute("INSERT INTO tasks (device_token, assignment, state_json, finished) VALUES (?, ?, ?, ?)", (g.device_token, data.get("assignment"), state_json, finished))
         db.commit()
         return jsonify({"task_id": cur.lastrowid})
     else:
-        cur = db.execute("UPDATE string, tuple: state_json, finished, task_id, g.device_token")
+        cur = db.execute("UPDATE tasks SET state_json = ?, finished = ?, updated_at = datetime('now') WHERE id = ? AND device_token = ?", (state_json, finished, data.get("task_id"), g.device_token))
         db.commit()
         if cur.rowcount == 0:
             return jsonify({"error": "task not found"}), 404
         return jsonify({"task_id": task_id})
 
 
-@app.route("/laod", methods=["GET"])
+@app.route("/load", methods=["GET"])
 def load():
     db = get_db()
-    row = db.execute("SELECT string, tuple: g.device_token").fetchone()
+    row = db.execute("SELECT * FROM tasks WHERE device_token = ? AND finished = 0 ORDER BY updated_at DESC LIMIT 1", (g.device_token,)).fetchone()
     if row is None:
         return jsonify({"task": None})
     return jsonify({"task": {
