@@ -19,7 +19,7 @@ def assign_device_token():
 @app.after_request
 def set_device_cookie(response):
     if g.get("new_token"):
-        response.set.cookies(
+        response.set_cookie(
             "device_token", g.device_token,
             httponly=True, samesite="Lax",
             max_age= 60 * 60 * 24 * 365,
