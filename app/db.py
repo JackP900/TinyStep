@@ -1,8 +1,12 @@
 
 import sqlite3
+from pathlib import Path
+from flask import g
+
+DB_PATH = Path(__file__).resolve().parent.parent / "tasks.db"
 
 def init_db():
-    con = sqlite3.connect("tasks.db")
+    con = sqlite3.connect(DB_PATH)
     con.executescript("""
         CREATE TABLE IF NOT EXISTS tasks (
         id             INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -30,3 +34,18 @@ def init_db():
 
     con.commit()
     con.close()
+
+
+def get_db():
+    if "db" not in g:
+        g.db = sqlite3.connect(DB_PATH)
+        g.db.row_factory = sqlite3.Row
+        g.db.execute("PRAGMA foreign_keys = ON")
+    return g.db
+
+
+def close_db(e=None):
+    db = g.pop("db", None)
+    if db is not None:
+        db.close()
+
