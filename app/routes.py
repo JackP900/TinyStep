@@ -7,7 +7,7 @@ import uuid, json
 
 @app.before_request
 def assign_device_token():
-    token = request.cookie.get("device_token")
+    token = request.cookies.get("device_token")
     if token is None:
         g.device_token = str(uuid.uuid4())
         g.new_token = True
