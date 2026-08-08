@@ -13,6 +13,7 @@ const progressFill = document.getElementById("progressFill");
 const streakDisplay = document.getElementById("streak");
 let streak = 0;
 const statusBar = document.getElementById("statusBar");
+const insightsBox = document.getElementById("insights");
 
 // Database variables
 let taskId = null; // DB row ID
@@ -201,7 +202,7 @@ function renderStuck(step, card) {
             const response = await fetch("/stuck", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ step: step.text, assignment: assignment, reason: reason, stall_history: stallHistory })
+                body: JSON.stringify({ step: step.text, assignment: assignment, reason: reason, stall_history: stallHistory, task_id:taskId })
             });
             if (!response.ok) {
                 const error = await response.json().catch(() => ({}));
@@ -411,4 +412,16 @@ window.addEventListener("DOMContentLoaded", async function () {
     statusBar.classList.remove("hidden");
     render();
     refreshProgress();
+})
+
+window.addEventListener("DOMContentLoaded", async function () {
+    const response = await fetch("/insights");
+    if (!response.ok) return;
+
+    const data = await response.json();
+    if (data.insights.length === 0) return;
+
+    const parts = data.insgihts.map(item => item.reason + " (" + item.count + ")");
+    insightsBox.textContent = "You get stuck most when steps feel: " + parts.join(", ");
+    insightsBox.classList.remove("hidden");
 })

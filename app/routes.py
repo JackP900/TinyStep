@@ -97,6 +97,10 @@ def stuck():
     if not data or not data.get("step") or not data.get("assignment") or not data.get("reason"):
         return jsonify({"error": "Something went wrong breaking that step down. Try again in a moment."}), 400
 
+    db = get_db()
+    db.execute("INSERT INTO stall_events (device_token, task_id, reason) VALUES (?, ?, ?)", (g.device_token, data.get("task_id"), data.get("reason")))
+    db.commit()
+
     smaller_steps = rebreak(
         data.get("step"),
         data.get("assignment"),
@@ -105,6 +109,14 @@ def stuck():
     )
     
     return jsonify({"steps": smaller_steps})
+
+
+@app.route("/insights", methods=["GET"])
+def insights():
+    db = get_db()
+    rows = db.execute("SELECT reason, COUNT(*) AS count FROM stall_events WHERE device_token = ? GROUP BY reason ORDER BY count DESC", (g.device_token,)).fetchall()
+    return jsonify({"insights": [{"reason": r["reason"], "count": r["count"]} for r in rows]})
+
 
 
 @app.route("/continue", methods=["POST"])
