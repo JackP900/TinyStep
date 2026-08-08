@@ -42,7 +42,7 @@ def save():
     task_id = data.get("task_id")
     if task_id is None:
         if not data.get("assignment"):
-            return jsonify({"error": "No task_id"}), 400
+            return jsonify({"error": "No assignment"}), 400
 
         cur = db.execute("INSERT INTO tasks (device_token, assignment, state_json, finished) VALUES (?, ?, ?, ?)", (g.device_token, data.get("assignment"), state_json, finished))
         db.commit()
