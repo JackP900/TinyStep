@@ -203,6 +203,11 @@ function renderStuck(step, card) {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ step: step.text, assignment: assignment, reason: reason, stall_history: stallHistory })
             });
+            if (!response.ok) {
+                const error = await response.json().catch(() => ({}));
+                showError(card, response.status, error.error, () => choiceButton.click());
+                return;
+            }
             const data = await response.json();
 
             step.subs = data.steps.map(function (t) {
@@ -350,6 +355,12 @@ continueButton.addEventListener("click", async function () {
        headers: {"Content-Type": "application/json"},
        body: JSON.stringify({assignment: assignment, steps: completedSteps})
    })
+   if (!response.ok) {
+    const error = await response.json().catch(() => ({}));
+    showError(continueStepsBox, response.status, error.error, () => continueButton.click());
+    continueButton.disabled = false;
+    return;
+   }
    const data = await response.json();
 
    // Clearing the new area for the next steps
@@ -386,6 +397,7 @@ continueButton.addEventListener("click", async function () {
 // Reloads saved steps so a user can continue a previous session
 window.addEventListener("DOMContentLoaded", async function () {
     const response = await fetch ("/load");
+    if (!response.ok) return;
     const { task } = await response.json();
     if (!task) return;
 
